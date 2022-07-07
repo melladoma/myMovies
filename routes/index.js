@@ -9,7 +9,12 @@ router.get('/', function (req, res, next) {
 });
 // var films = []
 router.get('/new-movies', function (req, res, next) {
-  var result = request('GET', "https://api.themoviedb.org/3/discover/movie?api_key=08296b6497f508f8edacace67f1f91d1&language=fr&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&release_date.lte=2022-07-07&watch_region=FR&with_watch_monetization_types=flatrate&include_image_language=fr")
+  // let newDate = new Date()
+  // let date = `${newDate.getFullYear()}-${newDate.getMonth() + 1}-${newDate.getDate()}`
+  // manque 0 devant jour et le mois... => en dur
+
+  var result = request('GET', "https://api.themoviedb.org/3/discover/movie?api_key=08296b6497f508f8edacace67f1f91d1&language=fr-FR&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&release_date.lte=2022-07-07&watch_region=FR&with_watch_monetization_types=flatrate&include_image_language=fr")
+
   var json = JSON.parse(result.body)
   // for (let i = 0; i < 4; i++) {
   //   let movie = {
@@ -28,21 +33,30 @@ router.post('/wishlist-movie', async function (req, res, next) {
   })
 
   var movieSaved = await movie.save();
+  var result = false;
+  if (movieSaved.title) {
+    result = true
+  }
   let idSaved = movieSaved._id;
   let nameSaved = movieSaved.title
 
-  res.json({ result: true, film: { idSaved, nameSaved } })
+  res.json({ result: result, film: { idSaved, nameSaved } })
 })
 
 router.delete('/wishlist-movie/:name', async function (req, res, next) {
-  await FilmModel.deleteOne({ title: req.params.name })
-  res.json({ result: true })
+  let returndB = await FilmModel.deleteOne({ title: req.params.name })
+  var result = false
+  if (returndB.deletedCount === 1) {
+    result = true
+  }
+  res.json({ result: result })
 })
 
 router.get('/wishlist-movie', async function (req, res, next) {
   let movieWishlist = await FilmModel.find()
   res.json({ result: true, movies: movieWishlist })
 })
+
 //url images exemples
 // Machine Gun Kelly
 // https://image.tmdb.org/t/p/w500/5hAqOWGbF7TiZjllAxC22XqPcjt.jpg
