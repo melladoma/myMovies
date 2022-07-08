@@ -47,9 +47,39 @@ function App() {
     }
     loadData();
 
+    async function loadWishlist() {
+      var rawResponse = await fetch('/wishlist-movie');
+      var response = await rawResponse.json()
+      let wishlistIni = [];
+      response.movies.map(item => {
+        let movie =
+        {
+          name: item.title,
+          img: item.img
+        }
+        return wishlistIni.push(movie)
+      })
+      setMoviesWishList(wishlistIni)
+      setMoviesCount(wishlistIni.length)
+    }
+    loadWishlist();
   }, [])
 
+  async function addData(movie) {
+    await fetch('/wishlist-movie', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `movieName=${movie.name}&movieUrl=${movie.img}`
+    })
+  }
 
+  async function deleteData(movie) {
+    let urlDelete = `/wishlist-movie/:${movie.name}`
+    console.log(urlDelete)
+    await fetch(urlDelete, {
+      method: 'DELETE',
+    })
+  }
 
   // let movieInfo = [
   //   {
@@ -59,102 +89,31 @@ function App() {
   //     note: 9.2,
   //     vote: 3,
   //     isInWishlist: false,
-  //   },
-  //   {
-  //     name: 'Frozen',
-  //     desc: "Anna, une jeune fille audacieuse, se lance dans un incroyable voyage en compagnie de Kristoff, montagnard expérimenté, et de son renne Sven, à la recherche de sa soeur, Elsa, la reine des neiges qui a plongé le royaume d'Arendelle dans un hiver éternel.",
-  //     img: './img/frozen.jpg',
-  //     note: 4,
-  //     vote: 7,
-  //     isInWishlist: false,
-  //   },
-  //   {
-  //     name: 'Jumanji : Next Level',
-  //     desc: "Lorsque Spencer retourne dans le monde fantastique de Jumanji, ses amis Martha, Fridge et Bethany y retournent aussi pour le sauver mais le jeu est maintenant brisé.",
-  //     img: './img/jumanji.jpg',
-  //     note: 7,
-  //     vote: 3,
-  //     isInWishlist: false,
-  //   },
-  //   {
-  //     name: 'Maléfique : le pouvoir du mal',
-  //     desc: "Maléfique grandit en menant une vie idyllique, jusqu'à ce qu'une armée d'invasion menace l'harmonie. Lorsque Maléfique devient la protectrice du territoire, elle se retrouve victime d'une trahison impitoyable.",
-  //     img: './img/maleficent.jpg',
-  //     note: 7,
-  //     vote: 3,
-  //     isInWishlist: false,
-  //   },
-  //   {
-  //     name: "Star Wars, épisode IX : L'ascension de Skywalker",
-  //     desc: "Un an a passé depuis que Kylo Ren a tué Snoke, le Leader suprême et pris sa place. Bien que largement décimée, la Résistance est prête à renaître de ses cendres.",
-  //     img: './img/starwars.jpg',
-  //     note: 5,
-  //     vote: 2,
-  //     isInWishlist: false,
-  //   },
-  //   {
-  //     name: "Terminator: Dark Fate",
-  //     desc: "De nos jours, à Mexico. Dani Ramos, 21 ans, travaille sur une chaîne de montage dans une usine automobile.",
-  //     img: './img/terminator.jpg',
-  //     note: 5,
-  //     vote: 4,
-  //     isInWishlist: false,
-  //   },
-  //   {
-  //     name: "Once Upon a Time… in Hollywood",
-  //     desc: "Rick Dalton, un acteur de télévision qui a déjà vécu de meilleures années, et son cascadeur de longue date Cliff Booth s'efforcent d'atteindre la gloire et le succès dans l'industrie cinématographique au cours de l'âge d'or d'Hollywood en 1969.",
-  //     img: './img/once_upon.jpg',
-  //     note: 4,
-  //     vote: 6,
-  //     isInWishlist: false,
-  //   },
-  // ];
+  //   }
+  // ]
 
   //Mise a jour dynamique de la wishlist
 
-
-
-
-
   var handleClickDeleteMovie = (movie) => {
-    // let index = 0;
-    // movieInfo.forEach(function (item, i) {
-    //   if (item.name === movie.name) {
-    //     index = i;
-    //   }
-    // })
-    // movieInfo[index].isInWishlist = false;
+    deleteData(movie);
     setMoviesWishList(moviesWishList.filter(e => e.name !== movie.name))
     setMoviesCount(moviesCount - 1)
   }
 
   var handleClickAddMovie = (movie) => {
-    // let index = 0;
-    // movieInfo.forEach(function (item, i) {
-    //   if (item.name === movie.name) {
-    //     index = i;
-    //   }
-    // })
+    addData(movie);
     setMoviesWishList([...moviesWishList, movie])
-    // movieInfo[index].isInWishlist = true;
     setMoviesCount(moviesCount + 1)
   }
 
   var handleWishlistClick = (movie) => {
-    // let index = 0;
-    // movieInfo.forEach(function (item, i) {
-    //   if (item.name === movie.name) {
-    //     index = i;
-    //   }
-    // })
-
+    deleteData(movie);
     setMoviesWishList(moviesWishList.filter(e => e.name !== movie.name))
-    // movieInfo[index].isInWishlist = false;
     setMoviesCount(moviesCount - 1)
   }
 
 
-  // var filmList = movieInfo.map(function (movie, i) {
+
   var filmList = moviesList.map(function (movie, i) {
 
     var result = moviesWishList.find(element => element.name === movie.name);
