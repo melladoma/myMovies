@@ -8,19 +8,20 @@ import { PopoverHeader, UncontrolledPopover, PopoverBody } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-
 function App() {
+
   //hooks d'etat
   const [moviesCount, setMoviesCount] = useState(0);
   const [moviesWishList, setMoviesWishList] = useState([]);
   const [moviesList, setMoviesList] = useState([])
 
-
+  // useEffect & async functions
   useEffect(() => {
     async function loadData() {
       var rawResponse = await fetch('/new-movies');
       var response = await rawResponse.json()
 
+      //traitement du fetch => aurait pu etre traite en back-end pour n'envoyer que les donnees utiles au front
       let movieInfo = []
       for (let i = 0; i < 20; i++) {
         if (response.movies[i].overview.length > 80) {
@@ -33,7 +34,6 @@ function App() {
         } else {
           image = "https://image.tmdb.org/t/p/w500" + response.movies[i].poster_path
         }
-
         let movie = {
           name: response.movies[i].title,
           desc: `${desc}`,
@@ -74,26 +74,13 @@ function App() {
   }
 
   async function deleteData(movie) {
-    let urlDelete = `/wishlist-movie/:${movie.name}`
-    console.log(urlDelete)
+    let urlDelete = `/wishlist-movie/${movie.name}`
     await fetch(urlDelete, {
       method: 'DELETE',
     })
   }
 
-  // let movieInfo = [
-  //   {
-  //     name: 'BadBoy 3',
-  //     desc: "Marcus Burnett est maintenant inspecteur de police. Mike Lowery est, quant à lui, en pleine crise de la quarantaine. Ils s'unissent à nouveau lorsqu'un mercenaire albanais, dont ils ont tué le frère, leur promet une importante prime.",
-  //     img: './img/badboy3.jpg',
-  //     note: 9.2,
-  //     vote: 3,
-  //     isInWishlist: false,
-  //   }
-  // ]
-
   //Mise a jour dynamique de la wishlist
-
   var handleClickDeleteMovie = (movie) => {
     deleteData(movie);
     setMoviesWishList(moviesWishList.filter(e => e.name !== movie.name))
@@ -112,15 +99,15 @@ function App() {
     setMoviesCount(moviesCount - 1)
   }
 
-
-
+  //generation dynamique de la movie list
   var filmList = moviesList.map(function (movie, i) {
-
+    //mise a jour de la prop isSee
     var result = moviesWishList.find(element => element.name === movie.name);
     var isSee = false
     if (result !== undefined) {
       isSee = true
     }
+
     return <Movie key={i} movieName={movie.name} movieDesc={movie.desc} movieImg={movie.img} globalRating={movie.note} globalCountRating={movie.vote} isInWishlist={isSee} handleClickAddMovieParent={handleClickAddMovie} handleClickDeleteMovieParent={handleClickDeleteMovie} />;
   })
 
@@ -129,7 +116,6 @@ function App() {
   if (moviesCount === 1) {
     content = "Film"
   }
-
 
   //affichage dynamique de la liste de films wishlist
   let movieListDisplay = [];
@@ -143,10 +129,7 @@ function App() {
         <FontAwesomeIcon className="mr-auto ml-0" onClick={() => handleWishlistClick(movie)} icon={faXmark} />
       </ListGroupItem>
     })
-
   }
-
-
 
   return (
     <div className="App">
@@ -202,7 +185,7 @@ function App() {
 
             </Nav>
           </div >
-          {/* <Header movieCount={moviesCount} movieList={moviesWishList} handleWishlistClickParent={handleWishlistClick} /> */}
+
         </Row>
 
         <Row>

@@ -49,7 +49,8 @@ router.post('/wishlist-movie', async function (req, res, next) {
 })
 
 router.delete('/wishlist-movie/:name', async function (req, res, next) {
-  let nameDecoded = decodeURI(req.params.name).substring(1)
+  let nameDecoded = decodeURI(req.params.name)
+  console.log(nameDecoded)
   let returndB = await FilmModel.deleteOne({ title: nameDecoded })
   var result = false
   if (returndB.deletedCount === 1) {
