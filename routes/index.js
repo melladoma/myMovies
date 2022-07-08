@@ -9,12 +9,22 @@ router.get('/', function (req, res, next) {
 });
 // var films = []
 router.get('/new-movies', function (req, res, next) {
-  // let newDate = new Date()
-  // let date = `${newDate.getFullYear()}-${newDate.getMonth() + 1}-${newDate.getDate()}`
-  // manque 0 devant jour et le mois... => en dur
+  //mise en forme de la date du jour selon format requis pour API = YYYY-MM-DD
+  let newDate = new Date()
+  if (newDate.getMonth() + 1 < 10) {
+    var month = "0" + (newDate.getMonth() + 1)
+  } else {
+    month = newDate.getMonth() + 1
+  }
+  if (newDate.getDate() < 10) {
+    var day = "0" + newDate.getDate()
+  } else {
+    day = newDate.getDate()
+  }
+  let date = `${newDate.getFullYear()}-${month}-${day}`
 
-  var result = request('GET', "https://api.themoviedb.org/3/discover/movie?api_key=08296b6497f508f8edacace67f1f91d1&language=fr-FR&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&release_date.lte=2022-07-07&watch_region=FR&with_watch_monetization_types=flatrate&include_image_language=fr")
 
+  var result = request('GET', `https://api.themoviedb.org/3/discover/movie?api_key=08296b6497f508f8edacace67f1f91d1&language=fr-FR&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&release_date.lte=${date}&watch_region=FR&with_watch_monetization_types=flatrate&include_image_language=fr`)
   var json = JSON.parse(result.body)
   // for (let i = 0; i < 4; i++) {
   //   let movie = {
@@ -23,7 +33,7 @@ router.get('/new-movies', function (req, res, next) {
   //   }
   //   films.push(movie)
   // }
-  res.json({ json: json })
+  res.json({ result: true, movies: json.results })
 })
 
 router.post('/wishlist-movie', async function (req, res, next) {
