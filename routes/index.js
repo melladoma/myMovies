@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var request = require('sync-request')
 var FilmModel = require('../models/films');
+const env = require('../env')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -10,6 +11,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/new-movies', function (req, res, next) {
+  const apiKey = env.apiKey
 
   //mise en forme de la date du jour selon format requis pour API = YYYY-MM-DD
   let newDate = new Date()
@@ -26,7 +28,7 @@ router.get('/new-movies', function (req, res, next) {
   let date = `${newDate.getFullYear()}-${month}-${day}`
 
 
-  var result = request('GET', `https://api.themoviedb.org/3/discover/movie?api_key=08296b6497f508f8edacace67f1f91d1&language=fr-FR&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&release_date.lte=${date}&watch_region=FR&with_watch_monetization_types=flatrate&include_image_language=fr`)
+  var result = request('GET', `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=fr-FR&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&release_date.lte=${date}&watch_region=FR&with_watch_monetization_types=flatrate&include_image_language=fr`)
   var json = JSON.parse(result.body)
   res.json({ result: true, movies: json.results })
 })

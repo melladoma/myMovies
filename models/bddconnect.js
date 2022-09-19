@@ -1,9 +1,10 @@
 var mongoose = require('mongoose')
+const env = require('../env')
 
-var user = 'admin';
-var password = 'adminpwd';
+var user = env.user;
+var password = env.password;
 var port = 55492;
-var bddname = 'mymovizapp';
+var bddname = env.bddname;
 
 var options = {
     connectTimeoutMS: 5000,
@@ -11,7 +12,7 @@ var options = {
     useUnifiedTopology: true
 }
 
-mongoose.connect(`mongodb+srv://${user}:${password}@cluster0.otruf.mongodb.net/${bddname}?retryWrites=true&w=majority`,
+mongoose.connect(env.bdd_connection_string,
     options,
     function (err) {
         console.log(err);
